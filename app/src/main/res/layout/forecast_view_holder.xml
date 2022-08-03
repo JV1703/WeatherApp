@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:background="@android:color/transparent"
+        tools:background="@drawable/gradient_sunny">
+
+        <TextView
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/amethysta"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="12 pm" />
+
+        <ImageView
+            android:id="@+id/weather_iv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            app:layout_constraintEnd_toEndOf="@id/time_tv"
+            app:layout_constraintStart_toStartOf="@id/time_tv"
+            app:layout_constraintTop_toBottomOf="@id/time_tv"
+            tools:src="@drawable/sunny_main" />
+
+        <TextView
+            android:id="@+id/temperature_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/amethysta"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/weather_iv"
+            app:layout_constraintStart_toStartOf="@id/weather_iv"
+            app:layout_constraintTop_toBottomOf="@id/weather_iv"
+            tools:text="17°" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

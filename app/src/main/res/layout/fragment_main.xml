@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:background="@drawable/gradient_sunny"
+        tools:context=".presentation.ui.fragment.main_fragment.MainFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextClock
+                android:id="@+id/date_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/amethysta"
+                android:format12Hour="EE, dd MMM yyyy"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/time_tv"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Monday, 01 Aug 2022" />
+
+            <TextClock
+                android:id="@+id/time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/amethysta"
+                android:format12Hour="hh:mm a"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="35sp"
+                app:layout_constraintBottom_toTopOf="@+id/location_tv"
+                app:layout_constraintEnd_toEndOf="@id/date_tv"
+                app:layout_constraintStart_toStartOf="@id/date_tv"
+                app:layout_constraintTop_toBottomOf="@+id/date_tv"
+                tools:text="10:00 pm" />
+
+            <TextView
+                android:id="@+id/location_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/amethysta"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/weather_iv"
+                app:layout_constraintEnd_toEndOf="@id/time_tv"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@id/time_tv"
+                app:layout_constraintTop_toBottomOf="@+id/time_tv"
+                tools:text="Batam" />
+
+            <ImageView
+                android:id="@+id/weather_iv"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                app:layout_constraintBottom_toTopOf="@+id/temperature_tv"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/location_tv"
+                app:tint="@color/white"
+                tools:src="@drawable/sunny_main" />
+
+            <TextView
+                android:id="@+id/temperature_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/amethysta"
+                android:textColor="@color/white"
+                android:textSize="65sp"
+                app:layout_constraintBottom_toTopOf="@+id/weather_desc_tv"
+                app:layout_constraintEnd_toEndOf="@id/weather_iv"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@id/weather_iv"
+                app:layout_constraintTop_toBottomOf="@+id/weather_iv"
+                tools:text="17°" />
+
+            <TextView
+                android:id="@+id/weather_desc_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/amethysta"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/support_view"
+                app:layout_constraintEnd_toEndOf="@id/temperature_tv"
+                app:layout_constraintStart_toStartOf="@id/temperature_tv"
+                app:layout_constraintTop_toBottomOf="@+id/temperature_tv"
+                tools:text="Sky is Clear" />
+
+            <View
+                android:id="@+id/support_view"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/forecast_rv"
+                app:layout_constraintEnd_toEndOf="@id/weather_iv"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@id/weather_iv"
+                app:layout_constraintTop_toBottomOf="@+id/weather_desc_tv" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/forecast_rv"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/support_view"
+                tools:listitem="@layout/forecast_view_holder" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</layout>

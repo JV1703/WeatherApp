@@ -11,9 +11,9 @@ data class Sys(
     @Json(name = "id")
     val id: Int,
     @Json(name = "sunrise")
-    val sunrise: Int,
+    val sunrise: Long,
     @Json(name = "sunset")
-    val sunset: Int,
+    val sunset: Long,
     @Json(name = "type")
     val type: Int
 )

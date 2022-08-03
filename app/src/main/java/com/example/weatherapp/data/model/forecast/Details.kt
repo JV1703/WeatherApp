@@ -9,13 +9,13 @@ data class Details (
     @Json(name = "clouds")
     val clouds: Clouds,
     @Json(name = "dt")
-    val dt: Int,
+    val dt: Long,
     @Json(name = "dt_txt")
     val dtTxt: String,
     @Json(name = "main")
     val main: Main,
     @Json(name = "pop")
-    val pop: Int,
+    val pop: Double,
     @Json(name = "sys")
     val sys: Sys,
     @Json(name = "visibility")
