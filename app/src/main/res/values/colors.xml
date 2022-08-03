@@ -14,4 +14,5 @@
     <color name="cloudy_dark">#3FAECF</color>
     <color name="rainy_light">#494176</color>
     <color name="rainy_dark">#2B526E</color>
+    <color name="search_grey">#eeeeee</color>
 </resources>

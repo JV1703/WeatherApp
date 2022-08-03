@@ -3,6 +3,7 @@ package com.example.weatherapp.data
 import com.example.weatherapp.data.model.current_weather.CurrentWeather
 import com.example.weatherapp.data.model.forecast.Forecast
 import com.example.weatherapp.data.model.geoCoding.GeoCoding
+import com.example.weatherapp.data.model.geoCoding.GeoCodingItem
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -33,5 +34,5 @@ interface WeatherApiService {
         @Query("q") query: String,
         @Query("limit") limit: Int,
         @Query("appid") apiKey: String
-    ): Response<GeoCoding>
+    ): Response<List<GeoCodingItem>>
 }

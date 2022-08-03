@@ -18,6 +18,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:id="@+id/search_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:src="@drawable/ic_search"
+                app:layout_constraintBottom_toBottomOf="@id/date_tv"
+                app:layout_constraintEnd_toStartOf="@+id/date_tv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/date_tv" />
+
             <TextClock
                 android:id="@+id/date_tv"
                 android:layout_width="wrap_content"
@@ -28,10 +38,20 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toTopOf="@+id/time_tv"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/options_iv"
+                app:layout_constraintStart_toEndOf="@+id/search_iv"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Monday, 01 Aug 2022" />
+
+            <ImageView
+                android:id="@+id/options_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_option"
+                app:layout_constraintBottom_toBottomOf="@id/date_tv"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/date_tv"
+                app:layout_constraintTop_toTopOf="@id/date_tv" />
 
             <TextClock
                 android:id="@+id/time_tv"

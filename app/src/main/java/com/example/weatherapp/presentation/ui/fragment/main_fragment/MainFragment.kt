@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.weatherapp.R
 import com.example.weatherapp.common.Constants.API_KEY
 import com.example.weatherapp.common.Constants.REQUEST_CODE_LOCATION_PERMISSION
@@ -52,6 +54,8 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private lateinit var forecastAdapter: ForecastAdapter
 
+    private val navArgs: MainFragmentArgs by navArgs()
+
 
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory(getForecastUseCaseImpl, getCurrentWeatherUseCaseImpl)
@@ -59,6 +63,7 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("main_fragment", "onCreate: triggered")
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
         getLocation()
@@ -69,13 +74,17 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.i("main_fragment", "onCreateView: triggered")
+        getLocation()
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.i("main_fragment", "onViewCreated: triggered")
         super.onViewCreated(view, savedInstanceState)
         setupRvAdapter()
+        setupListeners()
 
         binding.refreshLayout.setOnRefreshListener {
             getLocation()
@@ -84,8 +93,24 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.i("main_fragment", "onPause: triggered")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.i("main_fragment", "onStop: triggered")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.i("main_fragment", "onDestroyView: triggered")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        Log.i("main_fragment", "onDestroy: triggered")
         _binding = null
     }
 
@@ -94,6 +119,15 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         Manifest.permission.ACCESS_COARSE_LOCATION/*,
         Manifest.permission.ACCESS_BACKGROUND_LOCATION*/
     )
+
+    private fun setupListeners() {
+
+        binding.searchIv.setOnClickListener {
+            val action = MainFragmentDirections.actionMainFragmentToSearchFragment()
+            findNavController().navigate(action)
+        }
+
+    }
 
     private fun requestLocationPermission() {
         EasyPermissions.requestPermissions(
@@ -121,10 +155,14 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun getLocation() {
         if (hasLocationPermission()) {
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                getCurrentWeather(location.latitude, location.longitude, API_KEY)
-                getForecast(location.latitude, location.longitude, API_KEY)
-                Log.d("main_fragment", "lat: ${location.latitude}")
-                Log.d("main_fragment", "lan: ${location.longitude}")
+                Log.i("main_fragment", "lat: ${navArgs.lat} and lon: ${navArgs.lon}")
+                if (navArgs.lat == null && navArgs.lon == null) {
+                    getCurrentWeather(location.latitude, location.longitude, API_KEY)
+                    getForecast(location.latitude, location.longitude, API_KEY)
+                } else {
+                    getCurrentWeather(navArgs.lat!!.toDouble(), navArgs.lon!!.toDouble(), API_KEY)
+                    getForecast(navArgs.lat!!.toDouble(), navArgs.lon!!.toDouble(), API_KEY)
+                }
             }
         } else {
             requestLocationPermission()

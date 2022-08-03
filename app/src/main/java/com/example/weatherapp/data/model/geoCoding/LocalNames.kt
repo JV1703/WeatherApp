@@ -11,7 +11,7 @@ data class LocalNames(
     @Json(name = "ar")
     val ar: String?,
     @Json(name = "ascii")
-    val ascii: String,
+    val ascii: String?,
     @Json(name = "az")
     val az: String?,
     @Json(name = "bg")
@@ -25,13 +25,13 @@ data class LocalNames(
     @Json(name = "el")
     val el: String?,
     @Json(name = "en")
-    val en: String,
+    val en: String?,
     @Json(name = "eu")
     val eu: String?,
     @Json(name = "fa")
     val fa: String?,
     @Json(name = "feature_name")
-    val featureName: String,
+    val featureName: String?,
     @Json(name = "fi")
     val fi: String?,
     @Json(name = "fr")

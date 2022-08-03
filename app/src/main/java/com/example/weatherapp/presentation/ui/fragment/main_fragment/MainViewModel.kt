@@ -34,12 +34,13 @@ class MainViewModel(
     ) {
         fetchForecastJob?.cancel()
         fetchForecastJob = viewModelScope.launch {
+            _forecastResponse.value = NetworkResult.Loading()
             try {
                 val forecastResponse =
                     getForecastUseCaseImpl.getForecast(lat, lon, apiKey, units, cnt, lang)
 
                 _forecastResponse.value = networkResultHandler(forecastResponse)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _currentWeatherResponse.value =
                     NetworkResult.Error(e.message ?: "Something went wrong")
             }
@@ -55,6 +56,7 @@ class MainViewModel(
     ) {
         fetCurrentWeatherJob?.cancel()
         fetCurrentWeatherJob = viewModelScope.launch {
+            _currentWeatherResponse.value = NetworkResult.Loading()
             try {
                 val currentWeatherResponse = getCurrentWeatherUseCaseImpl.getCurrentWeather(
                     lat,

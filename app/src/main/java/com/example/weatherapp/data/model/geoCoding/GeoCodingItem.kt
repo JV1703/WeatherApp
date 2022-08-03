@@ -11,7 +11,7 @@ data class GeoCodingItem(
     @Json(name = "lat")
     val lat: Double,
     @Json(name = "local_names")
-    val localNames: LocalNames,
+    val localNames: LocalNames?,
     @Json(name = "lon")
     val lon: Double,
     @Json(name = "name")
