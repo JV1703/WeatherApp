@@ -1,5 +1,6 @@
 package com.example.weatherapp.common
 
+import android.util.Log
 import retrofit2.Response
 
 sealed class NetworkResult<T>(
@@ -17,17 +18,21 @@ fun <T : Any?> networkResultHandler(response: Response<T>): NetworkResult<T> {
 
     return when {
         response.message().toString().contains("timeout") -> {
+            Log.i("network_result","timeout")
             NetworkResult.Error("Timeout")
         }
         response.code() == 402 -> {
+            Log.i("network_result","402")
             NetworkResult.Error("API Key Limited")
         }
         response.isSuccessful -> {
             val response = response.body()
+            Log.i("network_result","isSuccessful")
             NetworkResult.Success(response!!)
         }
         else -> {
-            NetworkResult.Error(response.message())
+            Log.i("network_result","isError")
+            NetworkResult.Error("error code: ${response.code()}, error message:${response.message()}")
         }
     }
 

@@ -61,7 +61,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupSearchView(lifecycle)
-        setupSearchAdapter()
+        setupRecyclerView()
     }
 
     override fun onDestroy() {
@@ -82,7 +82,7 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun setupSearchAdapter() {
+    private fun setupRecyclerView() {
         binding.searchResultRv.adapter = searchAdapter
     }
 

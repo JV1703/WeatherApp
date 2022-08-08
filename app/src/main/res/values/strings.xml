@@ -2,4 +2,7 @@
     <string name="app_name">WeatherApp</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="unit_standard">Standard\n°K</string>
+    <string name="unit_imperial">Imperial\n°F</string>
+    <string name="unit_metric">Metric\n°C</string>
 </resources>

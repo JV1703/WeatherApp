@@ -16,6 +16,7 @@ import com.example.weatherapp.R
 import com.example.weatherapp.common.Constants.API_KEY
 import com.example.weatherapp.common.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.weatherapp.common.NetworkResult
+import com.example.weatherapp.common.isOnline
 import com.example.weatherapp.data.WeatherApi
 import com.example.weatherapp.data.datasource.current_weather.CurrentWeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.datasource.forecast.ForecastRemoteDataSourceImpl
@@ -56,7 +57,6 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private val navArgs: MainFragmentArgs by navArgs()
 
-
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory(getForecastUseCaseImpl, getCurrentWeatherUseCaseImpl)
     }
@@ -66,7 +66,6 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         Log.i("main_fragment", "onCreate: triggered")
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
-        getLocation()
         forecastAdapter = ForecastAdapter()
     }
 
@@ -75,7 +74,7 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         savedInstanceState: Bundle?
     ): View {
         Log.i("main_fragment", "onCreateView: triggered")
-        getLocation()
+        getLocationAndWeather()
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -87,7 +86,7 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         setupListeners()
 
         binding.refreshLayout.setOnRefreshListener {
-            getLocation()
+            getLocationAndWeather()
             binding.refreshLayout.isRefreshing = false
         }
 
@@ -116,8 +115,7 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun hasLocationPermission() = EasyPermissions.hasPermissions(
         requireContext(),
-        Manifest.permission.ACCESS_COARSE_LOCATION/*,
-        Manifest.permission.ACCESS_BACKGROUND_LOCATION*/
+        Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     private fun setupListeners() {
@@ -134,8 +132,7 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             this,
             "This application requires location permission to work.",
             REQUEST_CODE_LOCATION_PERMISSION,
-            Manifest.permission.ACCESS_COARSE_LOCATION/*,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION*/
+            Manifest.permission.ACCESS_COARSE_LOCATION
         )
     }
 
@@ -152,7 +149,7 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         Toast.makeText(requireContext(), "Permission granted!", Toast.LENGTH_SHORT).show()
     }
 
-    private fun getLocation() {
+    private fun getLocationAndWeather() {
         if (hasLocationPermission()) {
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                 Log.i("main_fragment", "lat: ${navArgs.lat} and lon: ${navArgs.lon}")
@@ -176,23 +173,35 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         units: String = "metric",
         lang: String = "en-us"
     ) {
-        viewModel.getCurrentWeather(lat, lon, apiKey, units, lang)
-        viewModel.currentWeatherResponse.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is NetworkResult.Success -> {
-                    Log.i("main_fragment", "Success: ${response.data}")
-                    response.data?.let {
-                        binding.locationTv.text = it.name
-                        binding.temperatureTv.text = "${it.main.temp.roundToInt()}°"
-                        binding.weatherDescTv.text = it.weather.first().description
-                        binding.weatherIv.setImageResource(updateWeatherImage(it.weather.first().main))
-                        backgroundGradient(it.sys.sunrise, it.sys.sunset, it.weather.first().main)
+        if (!isOnline(requireContext())) {
+            binding.lottieNoConnection.visibility = View.VISIBLE
+            binding.searchIv.isEnabled = false
+        } else {
+            binding.lottieNoConnection.visibility = View.GONE
+            viewModel.getCurrentWeather(lat, lon, apiKey, units, lang)
+            viewModel.currentWeatherResponse.observe(viewLifecycleOwner) { response ->
+                when (response) {
+                    is NetworkResult.Success -> {
+                        Log.i("main_fragment", "Success: ${response.data}")
+                        response.data?.let {
+                            binding.locationTv.text = it.name
+                            binding.temperatureTv.text = "${it.main.temp.roundToInt()}°"
+                            binding.weatherDescTv.text = it.weather.first().description
+                            binding.weatherIv.setImageResource(updateWeatherImage(it.weather.first().main))
+                            backgroundGradient(
+                                it.sys.sunrise,
+                                it.sys.sunset,
+                                it.weather.first().main
+                            )
+                        }
                     }
+                    is NetworkResult.Error -> {
+                        binding.lottieNoConnection.visibility = View.VISIBLE
+                        binding.searchIv.isEnabled = false
+                        Log.i("main_fragment", "Error: ${response.message}")
+                    }
+                    is NetworkResult.Loading -> {}
                 }
-                is NetworkResult.Error -> {
-                    Log.i("main_fragment", "Error: ${response.message}")
-                }
-                is NetworkResult.Loading -> {}
             }
         }
     }
@@ -206,20 +215,28 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         lang: String = "en-us"
     ) {
 
-        viewModel.getForecast(lat, lon, apiKey, units, cnt, lang)
-        viewModel.forecastResponse.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is NetworkResult.Success -> {
-                    Log.i("main_fragment", "Success: ${response.data}")
-                    response.data?.let {
-                        forecastAdapter.submitList(it.list)
-                        Log.i("main_fragment", "forecast: ${it.list}")
+        if (!isOnline(requireContext())) {
+            binding.lottieNoConnection.visibility = View.VISIBLE
+            binding.searchIv.isEnabled = false
+        } else {
+            binding.lottieNoConnection.visibility = View.GONE
+            viewModel.getForecast(lat, lon, apiKey, units, cnt, lang)
+            viewModel.forecastResponse.observe(viewLifecycleOwner) { response ->
+                when (response) {
+                    is NetworkResult.Success -> {
+                        Log.i("main_fragment", "Success: ${response.data}")
+                        response.data?.let {
+                            forecastAdapter.submitList(it.list)
+                            Log.i("main_fragment", "forecast: ${it.list}")
+                        }
                     }
+                    is NetworkResult.Error -> {
+                        binding.lottieNoConnection.visibility = View.VISIBLE
+                        binding.searchIv.isEnabled = false
+                        Log.i("main_fragment", "Error: ${response.message}")
+                    }
+                    is NetworkResult.Loading -> {}
                 }
-                is NetworkResult.Error -> {
-                    Log.i("main_fragment", "Error: ${response.message}")
-                }
-                is NetworkResult.Loading -> {}
             }
         }
 

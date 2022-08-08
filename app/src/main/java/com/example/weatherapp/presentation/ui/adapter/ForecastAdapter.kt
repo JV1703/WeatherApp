@@ -18,7 +18,7 @@ class ForecastAdapter : ListAdapter<Details, ForecastAdapter.ForecastViewHolder>
     inner class ForecastViewHolder(private val binding: ForecastViewHolderBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(forecast: Details) {
-            binding.timeTv.text = forecast.dtTxt.toDate().formatTo("hh a").lowercase()
+            binding.timeTv.text = forecast.dtTxt.toDate().formatTo("dd MMM\nhh a").lowercase()
             binding.weatherIv.setImageResource(updateWeatherImage(forecast.weather.first().main))
             binding.temperatureTv.text = "${forecast.main.temp.roundToInt()}°"
         }

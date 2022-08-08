@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presentation.ui.fragment.settings_fragment.SettingsFragment">
+
+        <TextView
+            android:id="@+id/temperature_units_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Temperature Units"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/units_rg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="12dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/temperature_units_tv"
+            app:layout_constraintTop_toBottomOf="@id/temperature_units_tv">
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/rb_temp_units_standard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/radio_button_start_selector"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:minWidth="80dp"
+                android:padding="10dp"
+                android:text="@string/unit_standard" />
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/rb_temp_units_imperial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/radio_button_mid_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:minWidth="80dp"
+                android:padding="10dp"
+                android:text="@string/unit_imperial" />
+
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/rb_temp_units_metric"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio_button_end_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:minWidth="80dp"
+                android:padding="10dp"
+                android:text="@string/unit_metric" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/notification_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Notification"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/units_rg"
+            app:layout_constraintTop_toBottomOf="@id/units_rg" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/notification_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:checked="true"
+            app:layout_constraintBottom_toBottomOf="@id/notification_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/notification_tv" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
