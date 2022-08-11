@@ -1,12 +1,14 @@
 package com.example.weatherapp.presentation.ui.fragment.main_fragment
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,7 +16,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.weatherapp.R
 import com.example.weatherapp.common.Constants.API_KEY
-import com.example.weatherapp.common.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.weatherapp.common.NetworkResult
 import com.example.weatherapp.common.isOnline
 import com.example.weatherapp.data.WeatherApi
@@ -28,13 +29,12 @@ import com.example.weatherapp.domain.forecast.GetForecastUseCaseImpl
 import com.example.weatherapp.presentation.ui.adapter.ForecastAdapter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.vmadalin.easypermissions.EasyPermissions
-import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import java.util.*
 import kotlin.math.roundToInt
 
-class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
+class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
@@ -74,7 +74,7 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         savedInstanceState: Bundle?
     ): View {
         Log.i("main_fragment", "onCreateView: triggered")
-        getLocationAndWeather()
+//        getLocationAndWeather()
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -82,14 +82,20 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.i("main_fragment", "onViewCreated: triggered")
         super.onViewCreated(view, savedInstanceState)
+//        requestLocationPermission()
         setupRvAdapter()
         setupListeners()
-
         binding.refreshLayout.setOnRefreshListener {
-            getLocationAndWeather()
+//            getLocationAndWeather()
             binding.refreshLayout.isRefreshing = false
         }
 
+    }
+
+    override fun onStart() {
+        Log.i("main_fragment", "onStart: triggered")
+        requestLocationPermission()
+        super.onStart()
     }
 
     override fun onPause() {
@@ -113,11 +119,6 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         _binding = null
     }
 
-    private fun hasLocationPermission() = EasyPermissions.hasPermissions(
-        requireContext(),
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    )
-
     private fun setupListeners() {
 
         binding.searchIv.setOnClickListener {
@@ -128,41 +129,38 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun requestLocationPermission() {
-        EasyPermissions.requestPermissions(
-            this,
-            "This application requires location permission to work.",
-            REQUEST_CODE_LOCATION_PERMISSION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
     }
 
-    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            Log.d("main_fragment", "onPermissionsDenied: $perms")
-            SettingsDialog.Builder(requireContext()).build().show()
+    val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.i("main_fragment", "location: isGranted")
+            binding.lottieNoConnection.visibility = View.GONE
+            binding.searchIv.isEnabled = true
+            getLocationAndWeather()
         } else {
-            requestLocationPermission()
+            Log.i("main_fragment", "location: isRejected")
+            binding.lottieNoConnection.setAnimation(R.raw.location_permission)
+            binding.lottieNoConnection.visibility = View.VISIBLE
+            binding.lottieNoConnection.playAnimation()
+            binding.searchIv.isEnabled = false
+            showLocationDialog()
         }
     }
 
-    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        Toast.makeText(requireContext(), "Permission granted!", Toast.LENGTH_SHORT).show()
-    }
-
     private fun getLocationAndWeather() {
-        if (hasLocationPermission()) {
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                Log.i("main_fragment", "lat: ${navArgs.lat} and lon: ${navArgs.lon}")
-                if (navArgs.lat == null && navArgs.lon == null) {
-                    getCurrentWeather(location.latitude, location.longitude, API_KEY)
-                    getForecast(location.latitude, location.longitude, API_KEY)
-                } else {
-                    getCurrentWeather(navArgs.lat!!.toDouble(), navArgs.lon!!.toDouble(), API_KEY)
-                    getForecast(navArgs.lat!!.toDouble(), navArgs.lon!!.toDouble(), API_KEY)
-                }
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+            Log.i("main_fragment", "lat: ${navArgs.lat} and lon: ${navArgs.lon}")
+            if (navArgs.lat == null && navArgs.lon == null) {
+                getCurrentWeather(location.latitude, location.longitude, API_KEY)
+                getForecast(location.latitude, location.longitude, API_KEY)
+            } else {
+                getCurrentWeather(navArgs.lat!!.toDouble(), navArgs.lon!!.toDouble(), API_KEY)
+                getForecast(navArgs.lat!!.toDouble(), navArgs.lon!!.toDouble(), API_KEY)
             }
-        } else {
-            requestLocationPermission()
+
         }
     }
 
@@ -240,6 +238,22 @@ class MainFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             }
         }
 
+    }
+
+    private fun showLocationDialog() {
+        val locationDialog = MaterialAlertDialogBuilder(requireContext())
+        locationDialog
+            .setTitle("Location permission required")
+            .setMessage("Location permission is required for this app to work.")
+            .setCancelable(false)
+            .setPositiveButton("Go to settings") { _, _ ->
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+            .setNegativeButton("Exit") { _, _ ->
+                activity?.finish()
+            }
+            .show()
     }
 
     private fun setupRvAdapter() {
